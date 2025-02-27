@@ -273,7 +273,7 @@ const Home = () => {
 
             <div className="w-full md:w-1/2">
               <h2 className="heading">
-                Most questions asked by our beloved customers
+                Most questions asked by our beloved customers !
               </h2>
               <FaqList />
             </div>
