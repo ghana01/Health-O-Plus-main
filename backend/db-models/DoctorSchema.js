@@ -10,17 +10,14 @@ const DoctorSchema = new mongoose.Schema({
   role: {
     type: String,
   },
-
-  // Fields for doctors only
+  city: { type: String, required: true }, // Added required city field
   specialization: { type: String },
   qualifications: {
     type: Array,
   },
-
   experiences: {
     type: Array,
   },
-
   bio: { type: String, maxLength: 50 },
   about: { type: String },
   timeSlots: { type: Array },

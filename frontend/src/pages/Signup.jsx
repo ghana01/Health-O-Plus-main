@@ -18,6 +18,7 @@ const Signup = () => {
     photo: selectedFile,
     gender: "",
     role: "patient",
+    city: "",
   });
   const navigate = useNavigate();
 
@@ -144,6 +145,20 @@ const Signup = () => {
                   </select>
                 </label>
               </div>
+
+              {formData.role === "doctor" && (
+                <div className="mb-5">
+                  <input
+                    type="text"
+                    placeholder="City"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    className="w-full pr-4 py-3 border-b border-solid border-[#0066ff61] focus:outline-none focus:border-b-primaryColor text-[16px] leading-7 text-headingColor placeholder:text-textColor cursor-pointer"
+                    required
+                  />
+                </div>
+              )}
 
               <div className="mb-5 flex items-center gap-3">
                 {selectedFile && (

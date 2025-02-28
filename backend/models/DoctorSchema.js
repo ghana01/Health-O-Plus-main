@@ -9,7 +9,7 @@ const Appointment = new Schema({
   testName: String,
 });
 
-const DoctorSchema = new mongoose.Schema({
+const doctorSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   name: { type: String, required: true },
@@ -54,4 +54,5 @@ const DoctorSchema = new mongoose.Schema({
   appointments: [Appointment],
 });
 
-export default mongoose.model("Doctor", DoctorSchema);
+const Doctor = mongoose.models.Doctor || mongoose.model("Doctor", doctorSchema);
+export default Doctor;
