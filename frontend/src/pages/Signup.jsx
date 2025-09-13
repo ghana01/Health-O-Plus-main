@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import signupImg from "../assets/images/signup.gif";
 import uploadImageToCloudinary from "../utils/uploadCloudinary";
 import { BASE_URL } from "../config.js";
-import { toast } from "react-toastify";
+import { cities } from "../assets/data/cities";
 import HashLoader from "react-spinners/HashLoader";
 
 const Signup = () => {
@@ -148,15 +148,20 @@ const Signup = () => {
 
               {formData.role === "doctor" && (
                 <div className="mb-5">
-                  <input
-                    type="text"
-                    placeholder="City"
+                  <select
                     name="city"
+                    className="w-full pr-4 py-3 border-b border-solid border-[#0066ff61] focus:outline-none focus:border-b-primaryColor text-[16px] leading-7 text-headingColor placeholder:text-textColor cursor-pointer"
                     value={formData.city}
                     onChange={handleInputChange}
-                    className="w-full pr-4 py-3 border-b border-solid border-[#0066ff61] focus:outline-none focus:border-b-primaryColor text-[16px] leading-7 text-headingColor placeholder:text-textColor cursor-pointer"
                     required
-                  />
+                  >
+                    <option value="">Select City</option>
+                    {cities.map((city, index) => (
+                      <option key={index} value={city}>
+                        {city}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               )}
 

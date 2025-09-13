@@ -6,10 +6,9 @@ import { toast } from "react-toastify";
 
 const SidePanel = ({ doctorId, ticketPrice, timeSlots }) => {
   const bookingHandler = async () => {
-    console.log("call");
     try {
       const res = await fetch(
-        `${BASE_URL}/bookings/checkout-session/${doctorId}`,
+        `${BASE_URL}/bookings/create-booking/${doctorId}`,
         {
           method: "post",
           headers: {
@@ -21,12 +20,10 @@ const SidePanel = ({ doctorId, ticketPrice, timeSlots }) => {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message + "Please try again");
+        throw new Error(data.message);
       }
 
-      if (data.session.url) {
-        window.location.href = data.session.url;
-      }
+      toast.success(data.message);
     } catch (err) {
       toast.error(err.message);
     }

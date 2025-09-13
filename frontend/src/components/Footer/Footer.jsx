@@ -71,7 +71,7 @@ const Footer = () => {
               alt=""
             />
             <p className="text-[16px] leading-7 font-[400] text-textColor mt-4">
-              Copyright &#169; {year} developed by Sarthak ,Arjun & Abhinav.
+              Copyright &#169;  developed by Ghanshyam kumar.
               
             </p>
             <div className="flex items-center gap-3 mt-4">

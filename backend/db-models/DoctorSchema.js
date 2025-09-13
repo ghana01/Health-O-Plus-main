@@ -10,7 +10,22 @@ const DoctorSchema = new mongoose.Schema({
   role: {
     type: String,
   },
-  city: { type: String, required: true }, // Added required city field
+  city: {
+    type: String,
+    required: true,
+    enum: [
+      "Mumbai",
+      "Delhi",
+      "Bangalore",
+      "Hyderabad",
+      "Ahmedabad",
+      "Chennai",
+      "Kolkata",
+      "Surat",
+      "Pune",
+      "Jaipur",
+    ],
+  },
   specialization: { type: String },
   qualifications: {
     type: Array,

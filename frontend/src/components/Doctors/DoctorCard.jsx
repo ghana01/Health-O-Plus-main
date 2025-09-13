@@ -3,7 +3,7 @@ import starIcon from "../../assets/images/Star.png";
 import { Link } from "react-router-dom";
 import { BsArrowRight } from "react-icons/bs";
 
-const DoctorCard = ({ doctor }) => {
+const DoctorCard = ({ doctor, appointment }) => {
   const {
     name,
     averageRating,
@@ -47,12 +47,22 @@ const DoctorCard = ({ doctor }) => {
               : "Hospital information not available"}
           </p>
         </div>
-        <Link
-          to={`/doctors/${doctor._id}`}
-          className="w-[44px] h-[44px] rounded-full border border-solid border-[#181A1E] flex items-center justify-center group hover:bg-primaryColor hover:border-none"
-        >
-          <BsArrowRight className="group-hover:text-white w-6 h-5" />
-        </Link>
+        <div className="flex items-center gap-4">
+          {appointment && (
+            <Link
+              to={`/video-call/${appointment.videoCallRoomId}`}
+              className="px-4 py-2 text-white bg-primaryColor rounded-md"
+            >
+              Join Call
+            </Link>
+          )}
+          <Link
+            to={`/doctors/${doctor._id}`}
+            className="w-[44px] h-[44px] rounded-full border border-solid border-[#181A1E] flex items-center justify-center group hover:bg-primaryColor hover:border-none"
+          >
+            <BsArrowRight className="group-hover:text-white w-6 h-5" />
+          </Link>
+        </div>
       </div>
     </div>
   );

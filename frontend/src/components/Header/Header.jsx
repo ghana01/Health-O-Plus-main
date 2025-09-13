@@ -24,7 +24,7 @@ const navLinks = [
     display: "Services",
   },
   {
-    path: "https://symptoms.webmd.com",
+    path: "/ai-consult",
     display: "AI Consult",
     external: true,
   },

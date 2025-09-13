@@ -18,6 +18,9 @@ export const register = async (req, res) => {
     const { name, email, password, role, city } = req.body;
     
     let user;
+
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(password, salt);
     
     if (role === 'doctor') {
       if (!city) {
@@ -26,7 +29,7 @@ export const register = async (req, res) => {
       user = new Doctor({
         name,
         email,
-        password,
+        password: hashPassword,
         role,
         city
       });
@@ -34,7 +37,7 @@ export const register = async (req, res) => {
       user = new User({
         name,
         email,
-        password,
+        password: hashPassword,
         role
       });
     }
@@ -54,27 +57,20 @@ export const login = async (req, res) => {
   try {
     let user = null;
 
-    const patient = await User.findOne({ email });
-    const doctor = await Doctor.findOne({ email });
-    const admin = await User.findOne({ email, role: "admin" }); // Add admin check
+    // Try to find user in User collection (patients and admins)
+    user = await User.findOne({ email });
 
-    if (patient) {
-      user = patient;
-    }
-    if (doctor) {
-      user = doctor;
-    }
-    if (admin) {
-      // Handle admin login
-      user = admin;
+    // If not found in User collection, try to find in Doctor collection
+    if (!user) {
+      user = await Doctor.findOne({ email });
     }
 
-    //check if user exist
+    // Check if user exists
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    //compare password
+    // Compare password
     const isPasswordMatch = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatch) {
@@ -83,9 +79,10 @@ export const login = async (req, res) => {
         .json({ status: false, message: "Invalid Credentials, try again" });
     }
 
-    // get token
+    // Generate token
     const token = generateToken(user);
     const { password: userPassword, role, appointments, ...rest } = user._doc;
+
     res.status(200).json({
       status: true,
       message: "Successfully login",

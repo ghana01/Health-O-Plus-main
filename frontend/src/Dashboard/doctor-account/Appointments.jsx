@@ -1,4 +1,4 @@
-import React from "react";
+import { Link } from "react-router-dom";
 import { formateDate } from "../../utils/formatDate.js";
 
 const Appointments = ({ appointments }) => {
@@ -14,6 +14,7 @@ const Appointments = ({ appointments }) => {
             <th className="py-3 px-6 text-left">Price</th>
             <th className="py-3 px-6 text-left">Booked on</th>
             <th className="py-3 px-6 text-left">Test name</th>
+            <th className="py-3 px-6 text-left">Actions</th>
           </tr>
         </thead>
         <tbody className="text-gray-600 text-sm font-light">
@@ -38,6 +39,14 @@ const Appointments = ({ appointments }) => {
                 {formateDate(item.updatedAt)}
               </td>
               <td className="py-3 px-6 text-left">{item.testName ||'Pneumonia'}</td>
+              <td className="py-3 px-6 text-left">
+                <Link
+                  to={`/video-call/${item.videoCallRoomId}`}
+                  className="px-4 py-2 text-white bg-primaryColor rounded-md"
+                >
+                  Join Call
+                </Link>
+              </td>
             </tr>
           ))}
         </tbody>

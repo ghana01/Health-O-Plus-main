@@ -16,7 +16,8 @@ import { services } from "../assets/data/services.js";
 import DiseasePage from "../components/Services/Disease/DiseasePage.jsx";
 import ForgotPassword from "../pages/ForgotPassword.jsx";
 import ResetPassword from "../pages/ResetPassword.jsx";
-
+import AIConsult from '../pages/AIConsult';
+import VideoCall from '../pages/VideoCall.jsx';
 const Routers = () => {
   return (
     <Routes>
@@ -28,9 +29,10 @@ const Routers = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Signup />} />
       <Route path="/contact" element={<Contact />} />
+      <Route path="/video-call/:roomId" element={<VideoCall />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:id/:token" element={<ResetPassword />} />
-
+      <Route path="/ai-consult" element={<AIConsult />} />
 
       <Route
         path="/services"

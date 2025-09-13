@@ -12,6 +12,8 @@ const Doctors = () => {
   const [query, setQuery] = useState("");
   const [debounceQuery, setDebounceQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState("Bangalore");
+  const [name, setName] = useState("");
+  const [specialization, setSpecialization] = useState("");
 
   useEffect(() => {
     const timeOut = setTimeout(() => {
@@ -21,7 +23,7 @@ const Doctors = () => {
   }, [query]);
 
   const { data: doctors, loading, error } = useFetchData(
-    `${BASE_URL}/doctors?query=${debounceQuery}`
+    `${BASE_URL}/doctors?city=${selectedCity}&name=${name}&specialization=${specialization}`
   );
 
   return (
@@ -45,13 +47,22 @@ const Doctors = () => {
               ))}
             </select>
 
-            {/* Search Input */}
+            {/* Name Input */}
             <input
               type="search"
-              className="py-3 px-4 w-96 rounded-md border border-gray-300 text-gray-800"
-              placeholder="🔍 Search doctors, clinics, hospitals..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              className="py-3 px-4 w-64 rounded-md border border-gray-300 text-gray-800"
+              placeholder="Doctor's Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+
+            {/* Specialization Input */}
+            <input
+              type="search"
+              className="py-3 px-4 w-64 rounded-md border border-gray-300 text-gray-800"
+              placeholder="Specialization"
+              value={specialization}
+              onChange={(e) => setSpecialization(e.target.value)}
             />
           </div>
 

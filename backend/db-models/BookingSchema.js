@@ -13,6 +13,9 @@ const bookingSchema = new mongoose.Schema(
       required: true,
     },
     ticketPrice: { type: String, required: true },
+    orderId: { type: String, required: true },
+    transactionId: { type: String },
+    videoCallRoomId: { type: String },
     status: {
       type: String,
       enum: ["pending", "approved", "cancelled"],
@@ -29,7 +32,7 @@ const bookingSchema = new mongoose.Schema(
 bookingSchema.pre(/^find/, function (next) {
   this.populate("user").populate({
     path: "doctor",
-    select: "name",
+    select: "name averageRating totalRating photo specialization experiences",
   });
   next();
 });

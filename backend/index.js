@@ -13,15 +13,18 @@ import adminRoute from "./Routes/admin.js";
 import contactRoute from "./Routes/contact.js";
 import forgotPassRoute from "./Routes/forgot-password.js";
 import healthRoute from "./Routes/healthPredict.js";
+import aiConsultRouter from './Routes/aiConsult.js';
+import uploadRoute from './Routes/upload.js';
+import { WebSocketServer } from "ws";
+import http from "http";
 
 dotenv.config();
 
 const app = express();
-const port =  8000;
+const port = 8000;
 
 const corsOptions = {
   origin: true,
-  
 };
 
 app.get("/", (req, res) => {
@@ -57,8 +60,68 @@ app.use("/api/v1/admin", adminRoute);
 app.use("/api/v1/", contactRoute);
 app.use("/api/v1/", forgotPassRoute);
 app.use("/api/v1/", healthRoute);
+app.use("/api/v1/upload", uploadRoute);
+app.use("/api/ai-consult", aiConsultRouter); // Remove v1 from the path
 
-app.listen(port, () => {
+const server = http.createServer(app);
+
+const wss = new WebSocketServer({ server }); 
+
+const rooms = {};
+
+wss.on("connection", (ws) => {
+  console.log("Client connected");
+
+  ws.on("message", (message) => {
+    const data = JSON.parse(message);
+
+    switch (data.type) {
+      case "join":
+        if (!rooms[data.roomId]) {
+          rooms[data.roomId] = [];
+        }
+        rooms[data.roomId].push(ws);
+        ws.roomId = data.roomId;
+        console.log(`Client joined room ${data.roomId}`);
+        break;
+      case "offer":
+      case "answer":
+      case "ice-candidate":
+        if (ws.roomId && rooms[ws.roomId]) {
+          rooms[ws.roomId].forEach((client) => {
+            if (client !== ws && client.readyState === ws.OPEN) {
+              client.send(JSON.stringify(data));
+            }
+          });
+        }
+        break;
+      case "chat-message":
+        if (ws.roomId && rooms[ws.roomId]) {
+          rooms[ws.roomId].forEach((client) => {
+            if (client !== ws && client.readyState === ws.OPEN) {
+              client.send(JSON.stringify(data));
+            }
+          });
+        }
+        break;
+      default:
+        break;
+    }
+  });
+
+  ws.on("close", () => {
+    console.log("Client disconnected");
+    if (ws.roomId && rooms[ws.roomId]) {
+      rooms[ws.roomId] = rooms[ws.roomId].filter((client) => client !== ws);
+      if (rooms[ws.roomId].length === 0) {
+        delete rooms[ws.roomId];
+      }
+    }
+  });
+});
+
+
+server.listen(port, () => {
   connectDB();
   console.log("Server is running on port " + port);
 });
