@@ -18,6 +18,7 @@ import ForgotPassword from "../pages/ForgotPassword.jsx";
 import ResetPassword from "../pages/ResetPassword.jsx";
 import AIConsult from '../pages/AIConsult';
 import VideoCall from '../pages/VideoCall.jsx';
+import AdminLogin from "../pages/AdminLogin";
 const Routers = () => {
   return (
     <Routes>
@@ -33,6 +34,7 @@ const Routers = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:id/:token" element={<ResetPassword />} />
       <Route path="/ai-consult" element={<AIConsult />} />
+      <Route path="/admin-login" element={<AdminLogin />} />
 
       <Route
         path="/services"

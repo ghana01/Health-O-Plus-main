@@ -104,6 +104,7 @@ const Login = () => {
             </Link>
           </p>
         </form>
+        {/* Admin portal link removed for security - admins can access directly via /admin-login */}
       </div>
     </section>
   );
