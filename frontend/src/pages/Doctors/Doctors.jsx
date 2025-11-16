@@ -11,7 +11,7 @@ import { specialties } from "../../assets/data/specialties";
 const Doctors = () => {
   const [query, setQuery] = useState("");
   const [debounceQuery, setDebounceQuery] = useState("");
-  const [selectedCity, setSelectedCity] = useState("Bangalore");
+  const [selectedCity, setSelectedCity] = useState(""); // Empty to show all
   const [name, setName] = useState("");
   const [specialization, setSpecialization] = useState("");
 
@@ -42,6 +42,7 @@ const Doctors = () => {
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
             >
+              <option value="">All Cities</option>
               {cities.map((city, index) => (
                 <option key={index} value={city}>{city}</option>
               ))}

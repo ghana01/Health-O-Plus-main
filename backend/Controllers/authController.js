@@ -131,7 +131,7 @@ export const adminLogin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    console.log("Admin login attempt:", { email, password });
+    console.log("Admin login attempt for:", email);
     
     // Only look for admin users
     const user = await User.findOne({ 
@@ -139,20 +139,18 @@ export const adminLogin = async (req, res) => {
       role: 'admin' 
     });
 
-    console.log("Found admin user:", user ? "Yes" : "No");
-    
     if (!user) {
-      console.log("No admin user found with email:", email);
+      console.log("Admin not found with email:", email);
       return res.status(401).json({ 
         status: false, 
         message: "Invalid admin credentials or unauthorized access" 
       });
     }
 
-    console.log("Comparing password...");
+    console.log("Admin found, comparing passwords...");
+    
     // Compare password
     const isPasswordMatch = await bcrypt.compare(password, user.password);
-    console.log("Password match:", isPasswordMatch);
 
     if (!isPasswordMatch) {
       console.log("Password mismatch for admin:", email);
@@ -162,11 +160,12 @@ export const adminLogin = async (req, res) => {
       });
     }
 
+    console.log("Admin login successful for:", email);
+    
     // Generate token
     const token = generateToken(user);
     const { password: userPassword, ...rest } = user._doc;
 
-    console.log("Admin login successful for:", email);
     res.status(200).json({
       status: true,
       message: "Admin login successful",

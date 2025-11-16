@@ -1,258 +1,346 @@
-import React from "react";
-import {
-  Typography,
-  Card,
-  CardHeader,
-  CardBody,
-  IconButton,
-  Menu,
-  MenuHandler,
-  MenuList,
-  MenuItem,
-  Avatar,
-  Tooltip,
-  Progress,
-} from "@material-tailwind/react";
-import { EllipsisVerticalIcon, ArrowUpIcon } from "@heroicons/react/24/outline";
-import { StatisticsCard } from "@/widgets/cards";
-import { StatisticsChart } from "@/widgets/charts";
-import {
-  statisticsCardsData,
-  statisticsChartsData,
-  projectsTableData,
-  ordersOverviewData,
-} from "@/data";
-import { CheckCircleIcon, ClockIcon } from "@heroicons/react/24/solid";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { BASE_URL, token } from "../config.js";
+import { FaUsers, FaCalendarCheck, FaHospital } from "react-icons/fa";
+import { FaUserDoctor } from "react-icons/fa6";
+import { MdPending, MdCheckCircle, MdCancel } from "react-icons/md";
+import { BsGraphUpArrow } from "react-icons/bs";
+import Loading from "../components/Loader/Loading.jsx";
 
 const AdminHome = () => {
-  return (
-    <div className="m-5 mt-12">
-      <div className="mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-4">
-        {statisticsCardsData.map(({ icon, title, footer, ...rest }) => (
-          <StatisticsCard
-            key={title}
-            {...rest}
-            title={title}
-            icon={React.createElement(icon, {
-              className: "w-6 h-6 text-white",
-            })}
-            footer={
-              <Typography className="font-normal text-blue-gray-600">
-                <strong className={footer.color}>{footer.value}</strong>
-                &nbsp;{footer.label}
-              </Typography>
-            }
-          />
-        ))}
-      </div>
-      <div className="mb-6 grid grid-cols-1 gap-y-12 gap-x-6 md:grid-cols-2 xl:grid-cols-3">
-        {statisticsChartsData.map((props) => (
-          <StatisticsChart
-            key={props.title}
-            {...props}
-            footer={
-              <Typography
-                variant="small"
-                className="flex items-center font-normal text-blue-gray-600"
-              >
-                <ClockIcon
-                  strokeWidth={2}
-                  className="h-4 w-4 text-blue-gray-400"
-                />
-                &nbsp;{props.footer}
-              </Typography>
-            }
-          />
-        ))}
-      </div>
-      <div className="mb-4 grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <Card className="overflow-hidden xl:col-span-2 border border-blue-gray-100 shadow-sm">
-          <CardHeader
-            floated={false}
-            shadow={false}
-            color="transparent"
-            className="m-0 flex items-center justify-between p-6"
-          >
-            <div>
-              <Typography variant="h6" color="blue-gray" className="mb-1">
-                Projects
-              </Typography>
-              <Typography
-                variant="small"
-                className="flex items-center gap-1 font-normal text-blue-gray-600"
-              >
-                <CheckCircleIcon
-                  strokeWidth={3}
-                  className="h-4 w-4 text-blue-gray-200"
-                />
-                <strong>30 done</strong> this month
-              </Typography>
-            </div>
-            <Menu placement="left-start">
-              <MenuHandler>
-                <IconButton size="sm" variant="text" color="blue-gray">
-                  <EllipsisVerticalIcon
-                    strokeWidth={3}
-                    fill="currenColor"
-                    className="h-6 w-6"
-                  />
-                </IconButton>
-              </MenuHandler>
-              <MenuList>
-                <MenuItem>Action</MenuItem>
-                <MenuItem>Another Action</MenuItem>
-                <MenuItem>Something else here</MenuItem>
-              </MenuList>
-            </Menu>
-          </CardHeader>
-          <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
-            <table className="w-full min-w-[640px] table-auto">
-              <thead>
-                <tr>
-                  {["companies", "members", "budget", "completion"].map(
-                    (el) => (
-                      <th
-                        key={el}
-                        className="border-b border-blue-gray-50 py-3 px-6 text-left"
-                      >
-                        <Typography
-                          variant="small"
-                          className="text-[11px] font-medium uppercase text-blue-gray-400"
-                        >
-                          {el}
-                        </Typography>
-                      </th>
-                    )
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {projectsTableData.map(
-                  ({ img, name, members, budget, completion }, key) => {
-                    const className = `py-3 px-5 ${
-                      key === projectsTableData.length - 1
-                        ? ""
-                        : "border-b border-blue-gray-50"
-                    }`;
+  // State to store all the data we fetch from backend
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalDoctors: 0,
+    totalBookings: 0,
+    pendingBookings: 0,
+    approvedBookings: 0,
+    cancelledBookings: 0,
+    pendingDoctors: 0,
+    approvedDoctors: 0,
+  });
+  
+  const [recentBookings, setRecentBookings] = useState([]);
+  const [recentUsers, setRecentUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-                    return (
-                      <tr key={name}>
-                        <td className={className}>
-                          <div className="flex items-center gap-4">
-                            <Avatar src={img} alt={name} size="sm" />
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-bold"
-                            >
-                              {name}
-                            </Typography>
-                          </div>
-                        </td>
-                        <td className={className}>
-                          {members.map(({ img, name }, key) => (
-                            <Tooltip key={name} content={name}>
-                              <Avatar
-                                src={img}
-                                alt={name}
-                                size="xs"
-                                variant="circular"
-                                className={`cursor-pointer border-2 border-white ${
-                                  key === 0 ? "" : "-ml-2.5"
-                                }`}
-                              />
-                            </Tooltip>
-                          ))}
-                        </td>
-                        <td className={className}>
-                          <Typography
-                            variant="small"
-                            className="text-xs font-medium text-blue-gray-600"
+  // Fetch all data when component loads
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  // Function to fetch all statistics and recent data
+  const fetchAllData = async () => {
+    setLoading(true);
+    try {
+      // Fetch users data
+      const usersRes = await fetch(`${BASE_URL}/admin/users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const usersData = await usersRes.json();
+
+      // Fetch doctors data
+      const doctorsRes = await fetch(`${BASE_URL}/admin/doctors`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const doctorsData = await doctorsRes.json();
+
+      // Fetch bookings data
+      const bookingsRes = await fetch(`${BASE_URL}/admin/bookings`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const bookingsData = await bookingsRes.json();
+
+      // Calculate statistics from the data we got
+      const pendingBookings = bookingsData.filter((b) => b.status === "pending").length;
+      const approvedBookings = bookingsData.filter((b) => b.status === "approved").length;
+      const cancelledBookings = bookingsData.filter((b) => b.status === "cancelled").length;
+      
+      const pendingDoctors = doctorsData.filter((d) => d.isApproved === "pending").length;
+      const approvedDoctors = doctorsData.filter((d) => d.isApproved === "approved").length;
+
+      // Update state with calculated statistics
+      setStats({
+        totalUsers: usersData.length,
+        totalDoctors: doctorsData.length,
+        totalBookings: bookingsData.length,
+        pendingBookings,
+        approvedBookings,
+        cancelledBookings,
+        pendingDoctors,
+        approvedDoctors,
+      });
+
+      // Get recent 5 bookings and users
+      setRecentBookings(bookingsData.slice(0, 5));
+      setRecentUsers(usersData.slice(0, 5));
+    } catch (error) {
+      console.error("Error fetching admin data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  return (
+    <div className="p-6 bg-gray-50 min-h-screen">
+      {/* Header Section */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+        <p className="text-gray-600 mt-2">Welcome back! Here's what's happening today.</p>
+      </div>
+
+      {/* Statistics Cards - Main Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Total Users Card */}
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform duration-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-100 text-sm font-medium">Total Users</p>
+              <h3 className="text-4xl font-bold mt-2">{stats.totalUsers}</h3>
+              <Link to="/admin/users" className="text-xs text-blue-100 hover:text-white mt-2 inline-block">
+                View All →
+              </Link>
+            </div>
+            <FaUsers className="text-6xl text-blue-300 opacity-50" />
+          </div>
+        </div>
+
+        {/* Total Doctors Card */}
+        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform duration-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-100 text-sm font-medium">Total Doctors</p>
+              <h3 className="text-4xl font-bold mt-2">{stats.totalDoctors}</h3>
+              <Link to="/admin/doctors" className="text-xs text-green-100 hover:text-white mt-2 inline-block">
+                View All →
+              </Link>
+            </div>
+            <FaUserDoctor className="text-6xl text-green-300 opacity-50" />
+          </div>
+        </div>
+
+        {/* Total Bookings Card */}
+        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform duration-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-purple-100 text-sm font-medium">Total Bookings</p>
+              <h3 className="text-4xl font-bold mt-2">{stats.totalBookings}</h3>
+              <Link to="/admin/bookings" className="text-xs text-purple-100 hover:text-white mt-2 inline-block">
+                View All →
+              </Link>
+            </div>
+            <FaCalendarCheck className="text-6xl text-purple-300 opacity-50" />
+          </div>
+        </div>
+
+        {/* Pending Approvals Card */}
+        <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform duration-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-orange-100 text-sm font-medium">Pending Doctors</p>
+              <h3 className="text-4xl font-bold mt-2">{stats.pendingDoctors}</h3>
+              <Link to="/admin/doctors" className="text-xs text-orange-100 hover:text-white mt-2 inline-block">
+                Review Now →
+              </Link>
+            </div>
+            <FaHospital className="text-6xl text-orange-300 opacity-50" />
+          </div>
+        </div>
+      </div>
+
+      {/* Bookings Status Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* Pending Bookings */}
+        <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Pending Bookings</p>
+              <h3 className="text-3xl font-bold text-gray-800 mt-2">{stats.pendingBookings}</h3>
+            </div>
+            <MdPending className="text-5xl text-yellow-500" />
+          </div>
+          <div className="mt-4">
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-yellow-500 h-2 rounded-full"
+                style={{ width: `${(stats.pendingBookings / stats.totalBookings) * 100 || 0}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Approved Bookings */}
+        <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Approved Bookings</p>
+              <h3 className="text-3xl font-bold text-gray-800 mt-2">{stats.approvedBookings}</h3>
+            </div>
+            <MdCheckCircle className="text-5xl text-green-500" />
+          </div>
+          <div className="mt-4">
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-green-500 h-2 rounded-full"
+                style={{ width: `${(stats.approvedBookings / stats.totalBookings) * 100 || 0}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Cancelled Bookings */}
+        <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Cancelled Bookings</p>
+              <h3 className="text-3xl font-bold text-gray-800 mt-2">{stats.cancelledBookings}</h3>
+            </div>
+            <MdCancel className="text-5xl text-red-500" />
+          </div>
+          <div className="mt-4">
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-red-500 h-2 rounded-full"
+                style={{ width: `${(stats.cancelledBookings / stats.totalBookings) * 100 || 0}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Two Column Layout for Tables */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Bookings Table */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="bg-gradient-to-r from-purple-500 to-purple-600 px-6 py-4">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <FaCalendarCheck />
+              Recent Bookings
+            </h2>
+          </div>
+          <div className="p-6">
+            {recentBookings.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-gray-200">
+                      <th className="text-left py-3 px-2 text-sm font-semibold text-gray-700">User</th>
+                      <th className="text-left py-3 px-2 text-sm font-semibold text-gray-700">Status</th>
+                      <th className="text-left py-3 px-2 text-sm font-semibold text-gray-700">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentBookings.map((booking, index) => (
+                      <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                        <td className="py-3 px-2 text-sm text-gray-800">{booking.user?.name || "N/A"}</td>
+                        <td className="py-3 px-2">
+                          <span
+                            className={`px-2 py-1 text-xs rounded-full ${
+                              booking.status === "approved"
+                                ? "bg-green-100 text-green-800"
+                                : booking.status === "pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
                           >
-                            {budget}
-                          </Typography>
+                            {booking.status}
+                          </span>
                         </td>
-                        <td className={className}>
-                          <div className="w-10/12">
-                            <Typography
-                              variant="small"
-                              className="mb-1 block text-xs font-medium text-blue-gray-600"
-                            >
-                              {completion}%
-                            </Typography>
-                            <Progress
-                              value={completion}
-                              variant="gradient"
-                              color={completion === 100 ? "green" : "blue"}
-                              className="h-1"
-                            />
-                          </div>
+                        <td className="py-3 px-2 text-sm text-gray-600">
+                          {new Date(booking.createdAt).toLocaleDateString()}
                         </td>
                       </tr>
-                    );
-                  }
-                )}
-              </tbody>
-            </table>
-          </CardBody>
-        </Card>
-        <Card className="border border-blue-gray-100 shadow-sm">
-          <CardHeader
-            floated={false}
-            shadow={false}
-            color="transparent"
-            className="m-0 p-6"
-          >
-            <Typography variant="h6" color="blue-gray" className="mb-2">
-              Orders Overview
-            </Typography>
-            <Typography
-              variant="small"
-              className="flex items-center gap-1 font-normal text-blue-gray-600"
-            >
-              <ArrowUpIcon
-                strokeWidth={3}
-                className="h-3.5 w-3.5 text-green-500"
-              />
-              <strong>24%</strong> this month
-            </Typography>
-          </CardHeader>
-          <CardBody className="pt-0">
-            {ordersOverviewData.map(
-              ({ icon, color, title, description }, key) => (
-                <div key={title} className="flex items-start gap-4 py-3">
-                  <div
-                    className={`relative p-1 after:absolute after:-bottom-6 after:left-2/4 after:w-0.5 after:-translate-x-2/4 after:bg-blue-gray-50 after:content-[''] ${
-                      key === ordersOverviewData.length - 1
-                        ? "after:h-0"
-                        : "after:h-4/6"
-                    }`}
-                  >
-                    {React.createElement(icon, {
-                      className: `!w-5 !h-5 ${color}`,
-                    })}
-                  </div>
-                  <div>
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="block font-medium"
-                    >
-                      {title}
-                    </Typography>
-                    <Typography
-                      as="span"
-                      variant="small"
-                      className="text-xs font-medium text-blue-gray-500"
-                    >
-                      {description}
-                    </Typography>
-                  </div>
-                </div>
-              )
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-4">No bookings available</p>
             )}
-          </CardBody>
-        </Card>
+            <Link
+              to="/admin/bookings"
+              className="text-purple-600 hover:text-purple-800 text-sm font-medium mt-4 inline-block"
+            >
+              View All Bookings →
+            </Link>
+          </div>
+        </div>
+
+        {/* Recent Users Table */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <FaUsers />
+              Recent Users
+            </h2>
+          </div>
+          <div className="p-6">
+            {recentUsers.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-gray-200">
+                      <th className="text-left py-3 px-2 text-sm font-semibold text-gray-700">Name</th>
+                      <th className="text-left py-3 px-2 text-sm font-semibold text-gray-700">Email</th>
+                      <th className="text-left py-3 px-2 text-sm font-semibold text-gray-700">Role</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentUsers.map((user, index) => (
+                      <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                        <td className="py-3 px-2 text-sm text-gray-800">{user.name}</td>
+                        <td className="py-3 px-2 text-sm text-gray-600">{user.email}</td>
+                        <td className="py-3 px-2">
+                          <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                            {user.role}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-4">No users available</p>
+            )}
+            <Link
+              to="/admin/users"
+              className="text-blue-600 hover:text-blue-800 text-sm font-medium mt-4 inline-block"
+            >
+              View All Users →
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Stats Summary */}
+      <div className="mt-8 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-lg shadow-lg p-6 text-white">
+        <div className="flex items-center gap-3 mb-4">
+          <BsGraphUpArrow className="text-3xl" />
+          <h2 className="text-2xl font-bold">System Overview</h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white bg-opacity-20 rounded-lg p-4">
+            <p className="text-indigo-100 text-sm">Approved Doctors</p>
+            <p className="text-3xl font-bold mt-1">{stats.approvedDoctors}</p>
+          </div>
+          <div className="bg-white bg-opacity-20 rounded-lg p-4">
+            <p className="text-indigo-100 text-sm">Pending Doctors</p>
+            <p className="text-3xl font-bold mt-1">{stats.pendingDoctors}</p>
+          </div>
+          <div className="bg-white bg-opacity-20 rounded-lg p-4">
+            <p className="text-indigo-100 text-sm">Total Patients</p>
+            <p className="text-3xl font-bold mt-1">{stats.totalUsers}</p>
+          </div>
+          <div className="bg-white bg-opacity-20 rounded-lg p-4">
+            <p className="text-indigo-100 text-sm">Active Bookings</p>
+            <p className="text-3xl font-bold mt-1">{stats.approvedBookings}</p>
+          </div>
+        </div>
       </div>
     </div>
   );
