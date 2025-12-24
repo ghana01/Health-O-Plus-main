@@ -1,6 +1,7 @@
 import  { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { FaUserCircle, FaRobot } from 'react-icons/fa'; // Using react-icons for avatars
+import { AI_CONSULT_URL } from "../config";
 
 // MessageContent Component: Formats and displays AI responses
 const MessageContent = ({ content }) => {
@@ -70,7 +71,7 @@ const AIConsult = () => {
         parts: [{ text: msg.content }]
       }));
 
-      const response = await axios.post('http://localhost:8000/api/ai-consult/chat', {
+      const response = await axios.post(`${AI_CONSULT_URL}/chat`, {
         message: inputMessage,
         history: formattedHistory
       });
@@ -109,7 +110,7 @@ const AIConsult = () => {
     formData.append('history', JSON.stringify(chatHistory));
 
     try {
-      const response = await axios.post('http://localhost:8000/api/ai-consult/analyze-report', formData, {
+      const response = await axios.post(`${AI_CONSULT_URL}/analyze-report`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       

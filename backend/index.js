@@ -28,10 +28,12 @@ import http from "http";
 dotenv.config();
 
 const app = express();
-const port = 8000;
+const port = process.env.PORT || 8000;
 
+// CORS configuration for production
 const corsOptions = {
-  origin: true,
+  origin: process.env.FRONTEND_URL || true,
+  credentials: true,
 };
 
 app.get("/", (req, res) => {
@@ -42,13 +44,14 @@ app.get("/", (req, res) => {
 mongoose.set("strictQuery", false);
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb://127.0.0.1:27017/MedLab', {
+    const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/MedLab';
+    await mongoose.connect(mongoUri, {
       //   useNewUrlParser: true,
       //   useUnifiedTopology: true,
     });
-    console.log("Mongoose connected");
+    console.log("Mongoose connected to:", mongoUri.includes('mongodb+srv') ? 'MongoDB Atlas' : 'Local MongoDB');
   } catch (error) {
-    console.log("Mongoose connection failed");
+    console.log("Mongoose connection failed:", error.message);
   }
 };
 

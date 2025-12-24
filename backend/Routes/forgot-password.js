@@ -7,6 +7,9 @@ import User from "../models/UserSchema.js";
 const router = express.Router();
 dotEnv.config();
 
+// Get frontend URL from environment variable
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
 // POST route for form submission
 router.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
@@ -14,7 +17,7 @@ router.post("/forgot-password", async (req, res) => {
     if (!user) {
       return res.send({ status: "User not exists." });
     }
-    const token = jwt.sign({ id: user._id }, "JWT_secret_key", {
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY || "JWT_secret_key", {
       expiresIn: "1d",
     });
     const transporter = nodemailer.createTransport({
@@ -23,18 +26,19 @@ router.post("/forgot-password", async (req, res) => {
       port: 587,
       secure: false,
       auth: {
-        user: process.env.USER,
-        pass: process.env.APP_PASS,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_APP_PASS,
       },
     });
     const mailOptions = {
       from: {
-        name: "Abdul Wahab",
-        user: process.env.USER,
+        name: "Health-O-Plus",
+        user: process.env.EMAIL_USER,
       },
-      to: "awminhas619@gmail.com",
-      subject: "Sending Email for Reset Password",
-      text: `http://localhost:5173/reset-password/${user._id}/${token}`,
+      to: email,
+      subject: "Reset Your Password - Health-O-Plus",
+      text: `Click the link to reset your password: ${FRONTEND_URL}/reset-password/${user._id}/${token}`,
+      html: `<p>Click <a href="${FRONTEND_URL}/reset-password/${user._id}/${token}">here</a> to reset your password.</p>`,
     };
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
@@ -50,7 +54,7 @@ router.post("/reset-password/:id/:token", (req, res) => {
   const { id, token } = req.params;
   const { password } = req.body;
 
-  jwt.verify(token, "JWT_secret_key", (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET_KEY || "JWT_secret_key", (err, decoded) => {
     if (err) {
       return res.json({ message: "Error with token" });
     } else {

@@ -1,13 +1,14 @@
 {
-  "name": "ai-medlab",
+  "name": "health-o-plus-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Health-O-Plus Backend API",
   "type": "module",
   "main": "index.js",
   "scripts": {
     "install-python-dependencies": "pip install -r requirements.txt",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "seed-admin": "node seedAdmin.js"
   },
   "author": "Abdul Wahab",

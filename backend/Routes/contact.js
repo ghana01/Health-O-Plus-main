@@ -11,8 +11,8 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false, // Use `true` for port 465, `false` for all other ports
   auth: {
-    user: process.env.USER,
-    pass: process.env.APP_PASS,
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_APP_PASS,
   },
 });
 
@@ -24,12 +24,13 @@ router.post("/contact", async (req, res) => {
     // Send email using the transporter
     let info = await transporter.sendMail({
       from: {
-        name: "Abdul Wahab",
-        address: process.env.USER,
+        name: "Health-O-Plus",
+        address: process.env.EMAIL_USER,
       },
-      to: "awminhas619@gmail.com",
-      subject: subject,
-      text: `Email: ${email}\n\nMessage: ${message}`,
+      to: process.env.EMAIL_USER, // Send to your own email
+      subject: `Contact Form: ${subject}`,
+      text: `From: ${email}\n\nMessage: ${message}`,
+      replyTo: email,
     });
 
     // Send response with email info and success message

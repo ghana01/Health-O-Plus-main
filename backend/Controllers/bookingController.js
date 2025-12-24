@@ -21,6 +21,9 @@ export const createBooking = async (req, res) => {
       });
     }
 
+    // Get appointmentDate and appointmentTime from request body
+    const { appointmentDate, appointmentTime, notes } = req.body;
+
     const orderId = "ORDER_" + new Date().getTime();
 
     const booking = new Booking({
@@ -28,9 +31,12 @@ export const createBooking = async (req, res) => {
       user: user._id,
       ticketPrice: doctor.ticketPrice,
       orderId: orderId,
-      status: "approved", // Set status to approved directly
+      status: "approved", // Set status to approved directly - no admin approval needed
       videoCallRoomId: orderId,
-      isPaid: true // Assume it's paid
+      isPaid: true, // Assume it's paid
+      appointmentDate: appointmentDate || new Date(), // Default to today if not provided
+      appointmentTime: appointmentTime || "10:00", // Default time if not provided
+      notes: notes || ""
     });
 
     await booking.save();
@@ -126,6 +132,128 @@ export const getBookingById = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error fetching booking",
+      error: err.message
+    });
+  }
+};
+
+// Get all bookings for a doctor
+export const getDoctorBookings = async (req, res) => {
+  try {
+    const doctorId = req.doctorId;
+    
+    const bookings = await Booking.find({ doctor: doctorId })
+      .populate("user", "name email photo gender")
+      .populate("doctor", "name email photo specialization")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      message: "Bookings fetched successfully",
+      data: bookings
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching doctor bookings",
+      error: err.message
+    });
+  }
+};
+
+// Update booking status (for doctor to mark as completed)
+export const updateBookingStatus = async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const { status } = req.body;
+    
+    const validStatuses = ["pending", "approved", "cancelled", "completed"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status value"
+      });
+    }
+    
+    const booking = await Booking.findById(bookingId);
+    
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found"
+      });
+    }
+    
+    booking.status = status;
+    await booking.save();
+    
+    res.status(200).json({
+      success: true,
+      message: `Booking ${status} successfully`,
+      data: booking
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Error updating booking status",
+      error: err.message
+    });
+  }
+};
+
+// Check if video call is accessible based on appointment time
+export const checkVideoCallAccess = async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    
+    const booking = await Booking.findById(bookingId)
+      .populate("doctor", "name")
+      .populate("user", "name");
+    
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found"
+      });
+    }
+    
+    // Check if booking is approved
+    if (booking.status !== "approved") {
+      return res.status(400).json({
+        success: false,
+        message: "This appointment is not approved",
+        isAccessible: false
+      });
+    }
+    
+    // Check if current time is within the appointment window
+    const now = new Date();
+    const appointmentDate = new Date(booking.appointmentDate);
+    
+    // Parse appointment time (format: "HH:MM")
+    const [hours, minutes] = (booking.appointmentTime || "00:00").split(":").map(Number);
+    appointmentDate.setHours(hours, minutes, 0, 0);
+    
+    // Allow access 5 minutes before appointment time and up to 1 hour after
+    const startWindow = new Date(appointmentDate.getTime() - 5 * 60 * 1000); // 5 minutes before
+    const endWindow = new Date(appointmentDate.getTime() + 60 * 60 * 1000); // 1 hour after
+    
+    const isAccessible = now >= startWindow && now <= endWindow;
+    
+    res.status(200).json({
+      success: true,
+      isAccessible,
+      appointmentDate: booking.appointmentDate,
+      appointmentTime: booking.appointmentTime,
+      videoCallRoomId: isAccessible ? booking.videoCallRoomId : null,
+      message: isAccessible 
+        ? "Video call is accessible" 
+        : `Video call will be available at ${booking.appointmentTime} on ${new Date(booking.appointmentDate).toLocaleDateString()}`
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Error checking video call access",
       error: err.message
     });
   }

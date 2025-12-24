@@ -1,11 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 import convertTime from "../../utils/convertTime.js";
 
 import { BASE_URL } from "./../../config.js";
 import { toast } from "react-toastify";
 
 const SidePanel = ({ doctorId, ticketPrice, timeSlots }) => {
+  const [appointmentDate, setAppointmentDate] = useState("");
+  const [appointmentTime, setAppointmentTime] = useState("");
+  const [isBooking, setIsBooking] = useState(false);
+
+  // Get tomorrow's date as minimum selectable date
+  const getMinDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  };
+
+  // Generate time slots based on doctor's available slots
+  const generateTimeOptions = () => {
+    const options = [];
+    for (let hour = 9; hour <= 17; hour++) {
+      options.push(`${hour.toString().padStart(2, '0')}:00`);
+      if (hour < 17) {
+        options.push(`${hour.toString().padStart(2, '0')}:30`);
+      }
+    }
+    return options;
+  };
+
   const bookingHandler = async () => {
+    if (!appointmentDate) {
+      toast.error("Please select an appointment date");
+      return;
+    }
+    if (!appointmentTime) {
+      toast.error("Please select an appointment time");
+      return;
+    }
+
+    setIsBooking(true);
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
@@ -14,7 +47,12 @@ const SidePanel = ({ doctorId, ticketPrice, timeSlots }) => {
           method: "post",
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            appointmentDate,
+            appointmentTime,
+          }),
         }
       );
 
@@ -24,9 +62,14 @@ const SidePanel = ({ doctorId, ticketPrice, timeSlots }) => {
         throw new Error(data.message);
       }
 
-      toast.success(data.message);
+      toast.success(`Appointment booked for ${appointmentDate} at ${appointmentTime}! Video call will be available at the scheduled time.`);
+      // Reset form
+      setAppointmentDate("");
+      setAppointmentTime("");
     } catch (err) {
       toast.error(err.message);
+    } finally {
+      setIsBooking(false);
     }
   };
 
@@ -58,9 +101,52 @@ const SidePanel = ({ doctorId, ticketPrice, timeSlots }) => {
           ))}
         </ul>
       </div>
-      <button onClick={bookingHandler} className="btn px-2 w-full rounded-md">
-        Book Appointment
+
+      {/* Appointment Date & Time Selection */}
+      <div className="mt-5 space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-headingColor mb-2">
+            Select Appointment Date
+          </label>
+          <input
+            type="date"
+            min={getMinDate()}
+            value={appointmentDate}
+            onChange={(e) => setAppointmentDate(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primaryColor"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-headingColor mb-2">
+            Select Appointment Time
+          </label>
+          <select
+            value={appointmentTime}
+            onChange={(e) => setAppointmentTime(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primaryColor"
+          >
+            <option value="">Choose a time</option>
+            {generateTimeOptions().map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <button 
+        onClick={bookingHandler} 
+        disabled={isBooking}
+        className={`btn px-2 w-full rounded-md mt-5 ${isBooking ? 'opacity-50 cursor-not-allowed' : ''}`}
+      >
+        {isBooking ? 'Booking...' : 'Book Appointment'}
       </button>
+      
+      <p className="text-xs text-gray-500 mt-2 text-center">
+        Video call link will be accessible at the scheduled time
+      </p>
     </div>
   );
 };

@@ -6,7 +6,7 @@ import { IoMdSend } from 'react-icons/io';
 import { BsChatDotsFill } from 'react-icons/bs';
 import { AiOutlinePaperClip } from 'react-icons/ai';
 import { toast } from 'react-toastify';
-import { BASE_URL } from '../config';
+import { BASE_URL, WS_URL } from '../config';
 
 const VideoCall = () => {
   const { roomId } = useParams();
@@ -35,7 +35,7 @@ const VideoCall = () => {
 
     // Initialize WebSocket connection
     try {
-      ws.current = new WebSocket('ws://localhost:8000');
+      ws.current = new WebSocket(WS_URL);
 
       ws.current.onopen = () => {
         console.log('WebSocket connected');

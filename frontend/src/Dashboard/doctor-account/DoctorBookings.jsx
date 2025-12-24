@@ -1,17 +1,68 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { BASE_URL } from "../../config.js";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { FaClock } from "react-icons/fa";
+
+// Helper function to check if video call is accessible
+const isVideoCallAccessible = (booking) => {
+  if (!booking || !booking.appointmentDate || !booking.appointmentTime) {
+    return true; // If no appointment time set, allow access
+  }
+  
+  const now = new Date();
+  const appointmentDate = new Date(booking.appointmentDate);
+  
+  // Parse appointment time (format: "HH:MM")
+  const [hours, minutes] = (booking.appointmentTime || "00:00").split(":").map(Number);
+  appointmentDate.setHours(hours, minutes, 0, 0);
+  
+  // Allow access 5 minutes before appointment time and up to 1 hour after
+  const startWindow = new Date(appointmentDate.getTime() - 5 * 60 * 1000);
+  const endWindow = new Date(appointmentDate.getTime() + 60 * 60 * 1000);
+  
+  return now >= startWindow && now <= endWindow;
+};
+
+// Format time remaining until appointment
+const getTimeUntilAppointment = (booking) => {
+  if (!booking || !booking.appointmentDate || !booking.appointmentTime) {
+    return null;
+  }
+  
+  const now = new Date();
+  const appointmentDate = new Date(booking.appointmentDate);
+  const [hours, minutes] = (booking.appointmentTime || "00:00").split(":").map(Number);
+  appointmentDate.setHours(hours, minutes, 0, 0);
+  
+  const diff = appointmentDate - now;
+  if (diff <= 0) return null;
+  
+  const hoursRemaining = Math.floor(diff / (1000 * 60 * 60));
+  const minutesRemaining = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  
+  if (hoursRemaining > 24) {
+    const days = Math.floor(hoursRemaining / 24);
+    return `${days}d left`;
+  } else if (hoursRemaining > 0) {
+    return `${hoursRemaining}h ${minutesRemaining}m`;
+  } else {
+    return `${minutesRemaining}m left`;
+  }
+};
 
 const DoctorBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState("all");
   const navigate = useNavigate();
+  
+  // State to trigger re-render for time-based access
+  const [, setTick] = useState(0);
 
   const token = localStorage.getItem("token");
 
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`${BASE_URL}/bookings/doctor-bookings`, {
@@ -25,11 +76,14 @@ const DoctorBookings = () => {
       toast.error("Failed to fetch bookings");
     }
     setLoading(false);
-  };
+  }, [token]);
 
   useEffect(() => {
     fetchBookings();
-  }, []);
+    // Re-check every minute for time-based access updates
+    const interval = setInterval(() => setTick(t => t + 1), 60000);
+    return () => clearInterval(interval);
+  }, [fetchBookings]);
 
   const updateBookingStatus = async (bookingId, status) => {
     try {
@@ -111,7 +165,11 @@ const DoctorBookings = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredBookings.map((booking) => (
+              {filteredBookings.map((booking) => {
+                const canAccessVideoCall = isVideoCallAccessible(booking);
+                const timeRemaining = getTimeUntilAppointment(booking);
+                
+                return (
                 <tr key={booking._id} className="border-b hover:bg-gray-50">
                   <td className="p-4">
                     <div className="flex items-center gap-3">
@@ -156,13 +214,24 @@ const DoctorBookings = () => {
                           </button>
                         </>
                       )}
-                      {booking.status === "approved" && booking.videoCallRoomId && (
+                      {/* Video call button - only accessible at appointment time */}
+                      {booking.status === "approved" && booking.videoCallRoomId && canAccessVideoCall && (
                         <button
                           onClick={() => joinVideoCall(booking.videoCallRoomId)}
-                          className="px-3 py-1 bg-irisBlueColor text-white rounded text-sm hover:bg-irisBlueColor/90"
+                          className="px-3 py-1 bg-irisBlueColor text-white rounded text-sm hover:bg-irisBlueColor/90 animate-pulse"
                         >
-                          Join Call
+                          Join Call Now
                         </button>
+                      )}
+                      {/* Show time remaining if video call is not yet accessible */}
+                      {booking.status === "approved" && booking.videoCallRoomId && !canAccessVideoCall && timeRemaining && (
+                        <div
+                          className="px-3 py-1 bg-gray-200 text-gray-600 rounded text-sm flex items-center gap-1"
+                          title={`Video call will be available at ${booking.appointmentTime}`}
+                        >
+                          <FaClock className="text-yellow-500" />
+                          <span>{timeRemaining}</span>
+                        </div>
                       )}
                       {booking.status === "approved" && (
                         <button
@@ -175,7 +244,7 @@ const DoctorBookings = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+              )})}
             </tbody>
           </table>
           {filteredBookings.length === 0 && (

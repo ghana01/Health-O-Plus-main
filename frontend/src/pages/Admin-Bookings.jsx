@@ -298,7 +298,7 @@ const AdminBookings = () => {
                   <div className="flex items-center gap-3 bg-purple-50 p-3 rounded-lg">
                     <FaCalendarAlt className="text-purple-600 text-lg flex-shrink-0" />
                     <div className="flex-1">
-                      <p className="text-xs text-gray-500 font-medium">Appointment Date</p>
+                      <p className="text-xs text-gray-500 font-medium">Appointment Date & Time</p>
                       <p className="text-sm font-bold text-gray-800">
                         {booking.appointmentDate
                           ? new Date(booking.appointmentDate).toLocaleDateString("en-US", {
@@ -311,6 +311,8 @@ const AdminBookings = () => {
                               month: "short",
                               day: "numeric",
                             })}
+                        {" at "}
+                        <span className="text-purple-600">{booking.appointmentTime || "Time not set"}</span>
                       </p>
                     </div>
                   </div>
