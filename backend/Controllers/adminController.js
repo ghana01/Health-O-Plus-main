@@ -76,7 +76,10 @@ export const getAllDoctors = async (req, res) => {
 };
 export const getAllBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({});
+    // Populate user and doctor data for bookings
+    const bookings = await Booking.find({})
+      .populate('user', 'name email photo')
+      .populate('doctor', 'name specialization photo');
 
     res.status(200).json({
       counts: bookings.length,
@@ -114,5 +117,72 @@ export const updateDoctorApprovalStatus = async (req, res) => {
       .json({ message: "Approval status updated successfully", doctor });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// Get single user by ID for admin
+export const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id).select("-password");
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User found",
+      data: user,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching user",
+      error: err.message,
+    });
+  }
+};
+
+// Update user by ID for admin
+export const updateUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, gender, role, bloodType, photo } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      {
+        name,
+        email,
+        gender,
+        role,
+        bloodType,
+        photo,
+      },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: updatedUser,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Error updating user",
+      error: err.message,
+    });
   }
 };

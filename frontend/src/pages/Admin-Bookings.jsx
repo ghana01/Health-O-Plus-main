@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BASE_URL, token } from "../config.js";
+import { BASE_URL } from "../config.js";
 import useFetchData from "../hooks/useFetchData.jsx";
 import { BiSearch } from "react-icons/bi";
 import { MdPayments, MdCheckCircle, MdPending, MdCancel } from "react-icons/md";
@@ -29,6 +29,7 @@ const AdminBookings = () => {
   // Fetch all users data from backend
   const getAllUsersData = async () => {
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`${BASE_URL}/admin/users`, {
         method: "GET",
         headers: {
@@ -46,6 +47,7 @@ const AdminBookings = () => {
   // Fetch all doctors data from backend
   const getAllDoctorsData = async () => {
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`${BASE_URL}/admin/doctors`, {
         method: "GET",
         headers: {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AiFillStar } from "react-icons/ai";
 import { useParams } from "react-router-dom";
-import { BASE_URL, token } from "../../config";
+import { BASE_URL } from "../../config";
 import { toast } from "react-toastify";
 import HashLoader from "react-spinners/HashLoader";
 
@@ -22,6 +22,7 @@ const FeedbackForm = () => {
         setLoading(false);
         return toast.error("Rating & Review Fields  are required");
       }
+      const token = localStorage.getItem("token");
       const res = await fetch(`${BASE_URL}/doctors/${id}/reviews`, {
         method: "post",
         headers: {

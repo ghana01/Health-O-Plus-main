@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BASE_URL, token } from "../config.js";
+import { BASE_URL } from "../config.js";
 import useFetchData from "../hooks/useFetchData.jsx";
 import defaultImg from "../assets/images/default.avif";
 import { BiEditAlt, BiSearch } from "react-icons/bi";
@@ -28,6 +28,7 @@ const AdminUsers = () => {
 
   const getAllUsersData = async () => {
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`${BASE_URL}/admin/users`, {
         method: "GET",
         headers: {

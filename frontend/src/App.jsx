@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./layout/Layout";
 import AdminLayout from "./layout/Admin-Layout.jsx";
+import ErrorBoundary from "./components/Error/ErrorBoundary";
 import { authContext } from "./context/AuthContext";
 import AdminHome from "./pages/Admin-Home";
 import AdminUsers from "./pages/Admin-Users";
@@ -23,23 +24,32 @@ function App() {
   // If admin is logged in, show admin routes
   if (token && role === "admin") {
     return (
-      <Routes>
-        <Route path="/" element={<AdminLayout />}>
-          <Route index element={<Navigate to="/admin/home" replace />} />
-          <Route path="admin/home" element={<AdminHome />} />
-          <Route path="admin/users" element={<AdminUsers />} />
-          <Route path="admin/doctors" element={<AdminDoctors />} />
-          <Route path="admin/bookings" element={<AdminBookings />} />
-          <Route path="admin/users/:id/edit" element={<AdminUpdate />} />
-          <Route path="delete/user/:id" element={<DeleteUser />} />
-          <Route path="delete/doctor/:id" element={<DeleteDoctor />} />
-        </Route>
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<AdminLayout />}>
+            <Route index element={<Navigate to="/admin/home" replace />} />
+            <Route path="home" element={<Navigate to="/admin/home" replace />} />
+            <Route path="admin/home" element={<AdminHome />} />
+            <Route path="admin/users" element={<AdminUsers />} />
+            <Route path="admin/doctors" element={<AdminDoctors />} />
+            <Route path="admin/bookings" element={<AdminBookings />} />
+            <Route path="admin/users/:id/edit" element={<AdminUpdate />} />
+            <Route path="delete/user/:id" element={<DeleteUser />} />
+            <Route path="delete/doctor/:id" element={<DeleteDoctor />} />
+            {/* Catch all other routes and redirect to admin home */}
+            <Route path="*" element={<Navigate to="/admin/home" replace />} />
+          </Route>
+        </Routes>
+      </ErrorBoundary>
     );
   }
 
   // Default layout for regular users
-  return <Layout />;
+  return (
+    <ErrorBoundary>
+      <Layout />
+    </ErrorBoundary>
+  );
 }
 
 export default App;

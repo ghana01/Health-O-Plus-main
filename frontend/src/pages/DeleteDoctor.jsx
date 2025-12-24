@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { BASE_URL, token } from "../config";
+import { BASE_URL } from "../config";
 import { MdWarning, MdDelete } from "react-icons/md";
 import { IoMdArrowBack } from "react-icons/io";
 import { FaUserDoctor } from "react-icons/fa6";
@@ -15,6 +15,7 @@ const DeleteDoctor = () => {
   // Function to delete doctor
   const handleDelete = () => {
     setLoading(true);
+    const token = localStorage.getItem("token");
     axios
       .delete(`${BASE_URL}/admin/doctors/delete/${id}`, {
         headers: {

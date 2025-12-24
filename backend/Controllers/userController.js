@@ -112,7 +112,9 @@ export const getUserProfile = async (req, res) => {
 
 export const getMyAppointments = async (req, res) => {
   try {
-    const bookings = await Booking.find({ user: req.userId });
+    const bookings = await Booking.find({ user: req.userId })
+      .populate("doctor", "name email photo specialization ticketPrice")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -122,7 +124,7 @@ export const getMyAppointments = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Someting went wrong, cannot get this",
+      message: "Something went wrong, cannot get this",
     });
   }
 };

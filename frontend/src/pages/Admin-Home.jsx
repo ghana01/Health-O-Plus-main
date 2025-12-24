@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { BASE_URL, token } from "../config.js";
+import { BASE_URL } from "../config.js";
 import { FaUsers, FaCalendarCheck, FaHospital } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
 import { MdPending, MdCheckCircle, MdCancel } from "react-icons/md";
@@ -33,6 +33,7 @@ const AdminHome = () => {
   const fetchAllData = async () => {
     setLoading(true);
     try {
+      const token = localStorage.getItem("token");
       // Fetch users data
       const usersRes = await fetch(`${BASE_URL}/admin/users`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -90,7 +91,7 @@ const AdminHome = () => {
       {/* Header Section */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
-        <p className="text-gray-600 mt-2">Welcome back! Here's what's happening today.</p>
+        <p className="text-gray-600 mt-2">Welcome back! Here&apos;s what&apos;s happening today.</p>
       </div>
 
       {/* Statistics Cards - Main Overview */}

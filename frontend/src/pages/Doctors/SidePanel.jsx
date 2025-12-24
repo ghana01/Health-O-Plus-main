@@ -1,12 +1,13 @@
 import React from "react";
 import convertTime from "../../utils/convertTime.js";
 
-import { BASE_URL, token } from "./../../config.js";
+import { BASE_URL } from "./../../config.js";
 import { toast } from "react-toastify";
 
 const SidePanel = ({ doctorId, ticketPrice, timeSlots }) => {
   const bookingHandler = async () => {
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch(
         `${BASE_URL}/bookings/create-booking/${doctorId}`,
         {

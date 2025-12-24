@@ -15,6 +15,13 @@ import forgotPassRoute from "./Routes/forgot-password.js";
 import healthRoute from "./Routes/healthPredict.js";
 import aiConsultRouter from './Routes/aiConsult.js';
 import uploadRoute from './Routes/upload.js';
+// New feature routes
+import timeSlotRoute from './Routes/timeSlot.js';
+import medicalRecordRoute from './Routes/medicalRecord.js';
+import prescriptionRoute from './Routes/prescription.js';
+import healthVitalRoute from './Routes/healthVital.js';
+import medicationReminderRoute from './Routes/medicationReminder.js';
+import emergencyContactRoute from './Routes/emergencyContact.js';
 import { WebSocketServer } from "ws";
 import http from "http";
 
@@ -62,6 +69,13 @@ app.use("/api/v1/", forgotPassRoute);
 app.use("/api/v1/", healthRoute);
 app.use("/api/v1/upload", uploadRoute);
 app.use("/api/ai-consult", aiConsultRouter); // Remove v1 from the path
+// New feature routes
+app.use("/api/v1/time-slots", timeSlotRoute);
+app.use("/api/v1/medical-records", medicalRecordRoute);
+app.use("/api/v1/prescriptions", prescriptionRoute);
+app.use("/api/v1/health-vitals", healthVitalRoute);
+app.use("/api/v1/medication-reminders", medicationReminderRoute);
+app.use("/api/v1/emergency-contacts", emergencyContactRoute);
 
 const server = http.createServer(app);
 

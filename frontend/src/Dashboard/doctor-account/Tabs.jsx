@@ -29,6 +29,39 @@ const Tabs = ({ tab, setTab }) => {
         </button>
 
         <button
+          onClick={() => setTab("bookings")}
+          className={`${
+            tab === "bookings"
+              ? "bg-indigo-100 text-primaryColor"
+              : "bg-transparent text-headingColor"
+          } w-full btn mt-0 rounded-md`}
+        >
+          Bookings
+        </button>
+
+        <button
+          onClick={() => setTab("availability")}
+          className={`${
+            tab === "availability"
+              ? "bg-indigo-100 text-primaryColor"
+              : "bg-transparent text-headingColor"
+          } w-full btn mt-0 rounded-md`}
+        >
+          Availability
+        </button>
+
+        <button
+          onClick={() => setTab("prescriptions")}
+          className={`${
+            tab === "prescriptions"
+              ? "bg-indigo-100 text-primaryColor"
+              : "bg-transparent text-headingColor"
+          } w-full btn mt-0 rounded-md`}
+        >
+          Prescriptions
+        </button>
+
+        <button
           onClick={() => setTab("appointments")}
           className={`${
             tab === "appointments"

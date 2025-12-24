@@ -12,16 +12,8 @@ const navLinks = [
     display: "Home",
   },
   {
-    path: "/symptomchk",
-    display: "HealthPredict",
-  },
-  {
     path: "/doctors",
     display: "Find a Doctor",
-  },
-  {
-    path: "/services",
-    display: "Services",
   },
   {
     path: "/ai-consult",

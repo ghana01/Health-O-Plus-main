@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { BASE_URL, token } from "../config";
+import { BASE_URL } from "../config";
 import { MdWarning, MdDelete } from "react-icons/md";
 import { IoMdArrowBack } from "react-icons/io";
 
@@ -14,6 +14,7 @@ const DeleteUser = () => {
   // Function to delete user
   const handleDelete = () => {
     setLoading(true);
+    const token = localStorage.getItem("token");
     axios
       .delete(`${BASE_URL}/admin/users/delete/${id}`, {
         headers: {

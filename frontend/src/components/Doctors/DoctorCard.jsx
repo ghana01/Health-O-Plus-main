@@ -48,13 +48,22 @@ const DoctorCard = ({ doctor, appointment }) => {
           </p>
         </div>
         <div className="flex items-center gap-4">
-          {appointment && (
+          {appointment && appointment.videoCallRoomId && (
             <Link
               to={`/video-call/${appointment.videoCallRoomId}`}
-              className="px-4 py-2 text-white bg-primaryColor rounded-md"
+              className="px-4 py-2 text-white bg-primaryColor rounded-md hover:bg-blue-700 transition-colors"
             >
               Join Call
             </Link>
+          )}
+          {appointment && !appointment.videoCallRoomId && (
+            <button
+              disabled
+              className="px-4 py-2 text-gray-400 bg-gray-300 rounded-md cursor-not-allowed"
+              title="Video call link not available"
+            >
+              No Call Link
+            </button>
           )}
           <Link
             to={`/doctors/${doctor._id}`}

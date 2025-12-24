@@ -8,6 +8,9 @@ import starIcon from "../../assets/images/Star.png";
 import DoctorAbout from "../../pages/Doctors/DoctorAbout.jsx";
 import Profile from "./Profile.jsx";
 import Appointments from "./Appointments.jsx";
+import AvailabilityCalendar from "./AvailabilityCalendar.jsx";
+import PrescriptionManagement from "./PrescriptionManagement.jsx";
+import DoctorBookings from "./DoctorBookings.jsx";
 
 const Dashboard = () => {
   const { data, loading, error } = useGetProfile(
@@ -93,6 +96,21 @@ const Dashboard = () => {
                 {tab === "appointments" && (
                   <div>
                     <Appointments appointments={data.appointments} />
+                  </div>
+                )}
+                {tab === "bookings" && (
+                  <div>
+                    <DoctorBookings />
+                  </div>
+                )}
+                {tab === "availability" && (
+                  <div>
+                    <AvailabilityCalendar />
+                  </div>
+                )}
+                {tab === "prescriptions" && (
+                  <div>
+                    <PrescriptionManagement />
                   </div>
                 )}
                 {tab === "settings" && (

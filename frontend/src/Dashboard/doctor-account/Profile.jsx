@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import uploadImageToCloudinary from "../../utils/uploadCloudinary";
-import { BASE_URL, token } from "../../config.js";
+import { BASE_URL } from "../../config.js";
 import { toast } from "react-toastify";
 
 const Profile = ({ doctorData }) => {
@@ -53,6 +53,7 @@ const Profile = ({ doctorData }) => {
     e.preventDefault();
 
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch(`${BASE_URL}/doctors/${doctorData._id}`, {
         method: "PUT",
         headers: {

@@ -1,8 +1,6 @@
 import React from "react";
 import Home from "../pages/Home";
-import Services from "../pages/Services";
 import Signup from "../pages/Signup";
-import Symptomchk from "../pages/Symptomchk";
 import Login from "../pages/Login";
 import Contact from "../pages/Contact";
 import Doctors from "../pages/Doctors/Doctors";
@@ -12,8 +10,6 @@ import MyAccount from "../Dashboard/user-account/MyAccount";
 import Dashboard from "../Dashboard/doctor-account/Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import CheckoutSuccess from "../pages/CheckoutSuccess";
-import { services } from "../assets/data/services.js";
-import DiseasePage from "../components/Services/Disease/DiseasePage.jsx";
 import ForgotPassword from "../pages/ForgotPassword.jsx";
 import ResetPassword from "../pages/ResetPassword.jsx";
 import AIConsult from '../pages/AIConsult';
@@ -30,19 +26,70 @@ import DeleteDoctor from "../pages/DeleteDoctor";
 const Routers = () => {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/home" element={<Home />} />
-      <Route path="/symptomchk" element={<Symptomchk />} />
-      <Route path="/doctors" element={<Doctors />} />
-      <Route path="/doctors/:id" element={<DoctorDetails />} />
+      {/* Public routes - No authentication required */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Signup />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/video-call/:roomId" element={<VideoCall />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:id/:token" element={<ResetPassword />} />
-      <Route path="/ai-consult" element={<AIConsult />} />
       <Route path="/admin-login" element={<AdminLogin />} />
+      
+      {/* Protected routes - Authentication required */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute allowedRoles={["patient", "doctor", "admin"]}>
+            <Home />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/home"
+        element={
+          <ProtectedRoute allowedRoles={["patient", "doctor", "admin"]}>
+            <Home />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/doctors"
+        element={
+          <ProtectedRoute allowedRoles={["patient", "doctor", "admin"]}>
+            <Doctors />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/doctors/:id"
+        element={
+          <ProtectedRoute allowedRoles={["patient", "doctor", "admin"]}>
+            <DoctorDetails />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/contact"
+        element={
+          <ProtectedRoute allowedRoles={["patient", "doctor", "admin"]}>
+            <Contact />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/video-call/:roomId"
+        element={
+          <ProtectedRoute allowedRoles={["patient", "doctor", "admin"]}>
+            <VideoCall />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ai-consult"
+        element={
+          <ProtectedRoute allowedRoles={["patient", "doctor", "admin"]}>
+            <AIConsult />
+          </ProtectedRoute>
+        }
+      />
       
       {/* Admin Routes */}
       <Route
@@ -103,14 +150,13 @@ const Routers = () => {
       />
 
       <Route
-        path="/services"
+        path="/checkout-success"
         element={
           <ProtectedRoute allowedRoles={["patient", "doctor", "admin"]}>
-            <Services />
+            <CheckoutSuccess />
           </ProtectedRoute>
         }
       />
-      <Route path="/checkout-success" element={<CheckoutSuccess />} />
       <Route
         path="/users/profile/me"
         element={
@@ -127,14 +173,6 @@ const Routers = () => {
           </ProtectedRoute>
         }
       />
-      {/* Dynamically create routes for each disease */}
-      {services.map((service) => (
-        <Route
-          key={service.id}
-          path={`/disease/${service.id}`}
-          element={<DiseasePage service={service} />} // Pass the service data to the DiseasePage component
-        />
-      ))}
     </Routes>
   );
 };

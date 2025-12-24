@@ -15,12 +15,29 @@ const bookingSchema = new mongoose.Schema(
     ticketPrice: { type: String, required: true },
     status: {
       type: String,
-      enum: ["pending", "approved", "cancelled"],
+      enum: ["pending", "approved", "cancelled", "completed"],
       default: "pending",
     },
     isPaid: {
       type: Boolean,
       default: true,
+    },
+    // New fields for scheduling
+    timeSlot: {
+      type: mongoose.Types.ObjectId,
+      ref: "TimeSlot",
+    },
+    appointmentDate: {
+      type: Date,
+    },
+    appointmentTime: {
+      type: String, // e.g., "09:00"
+    },
+    videoCallRoomId: {
+      type: String,
+    },
+    notes: {
+      type: String,
     },
   },
   { timestamps: true }

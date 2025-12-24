@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 import uploadImageToCloudinary from "../../utils/uploadCloudinary.js";
-import { BASE_URL, token } from "../../config.js";
+import { BASE_URL } from "../../config.js";
 import { toast } from "react-toastify";
 import HashLoader from "react-spinners/HashLoader";
 const Profile = ({ user }) => {
@@ -50,6 +50,7 @@ const Profile = ({ user }) => {
     setLoading(true);
 
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch(`${BASE_URL}/users/${user._id}`, {
         method: "put",
         headers: {

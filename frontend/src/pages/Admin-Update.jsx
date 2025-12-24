@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { BASE_URL, token } from "../config";
+import { BASE_URL } from "../config";
 import Loading from "../components/Loader/Loading";
 import Error from "../components/Error/Error";
 
@@ -23,6 +23,7 @@ const AdminUpdate = () => {
     const fetchUserData = async () => {
       setLoading(true);
       try {
+        const token = localStorage.getItem("token");
         const response = await fetch(`${BASE_URL}/admin/users/${id}`, {
           method: "GET",
           headers: {
@@ -66,6 +67,7 @@ const AdminUpdate = () => {
     setLoading(true);
 
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`${BASE_URL}/admin/users/${id}`, {
         method: "PUT",
         headers: {

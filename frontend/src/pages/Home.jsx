@@ -12,13 +12,11 @@ import avatarIcon from "../assets/images/avatar-icon.png";
 import { Link } from "react-router-dom";
 import { BsArrowRight } from "react-icons/bs";
 import About from "../components/About/About";
-import ServiceList from "../components/Services/ServiceList";
 import DoctorList from "../components/Doctors/DoctorList";
 import FaqList from "../components/Faq/FaqList";
 import Testimonial from "../components/Testimonial/Testimonial";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import FloatingConsultation from "../components/FloatingConsultation";
 
 const Home = () => {
   const navigate = useNavigate(); // Get the navigate function from useNavigate
@@ -172,21 +170,6 @@ const Home = () => {
       <About />
       {/* ========== About Section end ========== */}
 
-      {/* ========== Services Section ========== */}
-      <section>
-        <div className="container">
-          <div className="xl:w-[470px] mx-auto">
-            <h2 className="heading text-center">Our medical services</h2>
-            <p className="text__para text-center">
-              World-class care for everyone. Our health system offers
-              unmathched, expert health care.
-            </p>
-          </div>
-          <ServiceList />
-        </div>
-      </section>
-      {/* ========== Services Section end ========== */}
-
       {/* ========== Feature Section ========== */}
       <section>
         <div className="container">
@@ -296,11 +279,6 @@ const Home = () => {
         </div>
       </section>
       {/* ========== Testimonial Section end ========== */}
-      <section>
-      {/* ========== Floating Consultation ========== */}
-        <FloatingConsultation />
-
-      </section>
     </>
   );
 };

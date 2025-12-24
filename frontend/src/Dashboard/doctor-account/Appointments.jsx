@@ -40,12 +40,22 @@ const Appointments = ({ appointments }) => {
               </td>
               <td className="py-3 px-6 text-left">{item.testName ||'Pneumonia'}</td>
               <td className="py-3 px-6 text-left">
-                <Link
-                  to={`/video-call/${item.videoCallRoomId}`}
-                  className="px-4 py-2 text-white bg-primaryColor rounded-md"
-                >
-                  Join Call
-                </Link>
+                {item.videoCallRoomId ? (
+                  <Link
+                    to={`/video-call/${item.videoCallRoomId}`}
+                    className="px-4 py-2 text-white bg-primaryColor rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    Join Call
+                  </Link>
+                ) : (
+                  <button
+                    disabled
+                    className="px-4 py-2 text-gray-400 bg-gray-300 rounded-md cursor-not-allowed"
+                    title="Video call link not available for this appointment"
+                  >
+                    No Call Link
+                  </button>
+                )}
               </td>
             </tr>
           ))}

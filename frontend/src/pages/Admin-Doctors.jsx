@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL, token } from "../config.js";
+import { BASE_URL } from "../config.js";
 import useFetchData from "../hooks/useFetchData.jsx";
 import defaultImg from "../assets/images/default.avif";
 import { BiEditAlt, BiSearch } from "react-icons/bi";
@@ -10,6 +10,7 @@ import { FaUserDoctor } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa6";
 import { MdMarkEmailUnread } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import Loading from "../components/Loader/Loading.jsx";
 import Error from "../components/Error/Error.jsx";
 
@@ -33,6 +34,7 @@ const AdminDoctors = () => {
   // Function to fetch all doctors data
   const getAllUsersData = async () => {
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`${BASE_URL}/admin/doctors`, {
         method: "GET",
         headers: {
@@ -49,6 +51,7 @@ const AdminDoctors = () => {
   // Function to update doctor approval status
   const updateApprovalStatus = async (id, newStatus) => {
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`${BASE_URL}/admin/doctors/${id}`, {
         method: "PUT",
         headers: {
@@ -62,11 +65,15 @@ const AdminDoctors = () => {
 
       // Refresh the page to show updated data
       if (response.ok) {
+        toast.success("Doctor approval status updated successfully");
         navigate(`/admin/doctors`);
         getAllUsersData();
+      } else {
+        toast.error(data.message || "Failed to update approval status");
       }
     } catch (error) {
       console.log("Error updating approval status:", error);
+      toast.error("Error updating approval status");
     }
   };
 

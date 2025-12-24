@@ -4,6 +4,12 @@ import { authContext } from "./../../context/AuthContext.jsx";
 
 import MyBookings from "./MyBookings.jsx";
 import Profile from "./Profile.jsx";
+import HealthDashboard from "./HealthDashboard.jsx";
+import MedicalRecords from "./MedicalRecords.jsx";
+import MedicationReminders from "./MedicationReminders.jsx";
+import MyPrescriptions from "./MyPrescriptions.jsx";
+import MyAppointments from "./MyAppointments.jsx";
+import EmergencyContacts from "./EmergencyContacts.jsx";
 
 import useGetProfile from "../../hooks/useFetchData.jsx";
 import { BASE_URL } from "../../config.js";
@@ -12,7 +18,7 @@ import Error from "../../components/Error/Error.jsx";
 
 const MyAccount = () => {
   const { dispatch } = useContext(authContext);
-  const [tab, setTab] = useState("bookings");
+  const [tab, setTab] = useState("dashboard");
 
   const {
     data: userData,
@@ -72,28 +78,87 @@ const MyAccount = () => {
             </div>
 
             <div className="md:col-span-2 md:px-[30px]">
-              <div>
+              <div className="flex flex-wrap gap-2 mb-6">
+                <button
+                  onClick={() => setTab("dashboard")}
+                  className={` ${
+                    tab === "dashboard" &&
+                    "bg-primaryColor text-white font-normal"
+                  } py-2 px-4 rounded-md text-headingColor font-semibold text-[14px] leading-7 border border-solid border-primaryColor`}
+                >
+                  Health Dashboard
+                </button>
+                <button
+                  onClick={() => setTab("appointments")}
+                  className={` ${
+                    tab === "appointments" &&
+                    "bg-primaryColor text-white font-normal"
+                  } py-2 px-4 rounded-md text-headingColor font-semibold text-[14px] leading-7 border border-solid border-primaryColor`}
+                >
+                  Appointments
+                </button>
+                <button
+                  onClick={() => setTab("records")}
+                  className={` ${
+                    tab === "records" &&
+                    "bg-primaryColor text-white font-normal"
+                  } py-2 px-4 rounded-md text-headingColor font-semibold text-[14px] leading-7 border border-solid border-primaryColor`}
+                >
+                  Medical Records
+                </button>
+                <button
+                  onClick={() => setTab("prescriptions")}
+                  className={` ${
+                    tab === "prescriptions" &&
+                    "bg-primaryColor text-white font-normal"
+                  } py-2 px-4 rounded-md text-headingColor font-semibold text-[14px] leading-7 border border-solid border-primaryColor`}
+                >
+                  Prescriptions
+                </button>
+                <button
+                  onClick={() => setTab("medications")}
+                  className={` ${
+                    tab === "medications" &&
+                    "bg-primaryColor text-white font-normal"
+                  } py-2 px-4 rounded-md text-headingColor font-semibold text-[14px] leading-7 border border-solid border-primaryColor`}
+                >
+                  Medications
+                </button>
                 <button
                   onClick={() => setTab("bookings")}
                   className={` ${
                     tab === "bookings" &&
                     "bg-primaryColor text-white font-normal"
-                  } py-2 mr-5 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7 border border-solid border-primaryColor`}
+                  } py-2 px-4 rounded-md text-headingColor font-semibold text-[14px] leading-7 border border-solid border-primaryColor`}
                 >
                   My Bookings
+                </button>
+                <button
+                  onClick={() => setTab("emergency")}
+                  className={` ${
+                    tab === "emergency" &&
+                    "bg-red-500 text-white font-normal"
+                  } py-2 px-4 rounded-md font-semibold text-[14px] leading-7 border border-solid border-red-500 text-red-600`}
+                >
+                  Emergency
                 </button>
                 <button
                   onClick={() => setTab("settings")}
                   className={` ${
                     tab === "settings" &&
                     "bg-primaryColor text-white font-normal"
-                  }
-        py-2 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7 border border-solid border-primaryColor`}
+                  } py-2 px-4 rounded-md text-headingColor font-semibold text-[14px] leading-7 border border-solid border-primaryColor`}
                 >
-                  Profile Settings
+                  Settings
                 </button>
               </div>
+              {tab === "dashboard" && <HealthDashboard />}
+              {tab === "appointments" && <MyAppointments />}
+              {tab === "records" && <MedicalRecords />}
+              {tab === "prescriptions" && <MyPrescriptions />}
+              {tab === "medications" && <MedicationReminders />}
               {tab === "bookings" && <MyBookings />}
+              {tab === "emergency" && <EmergencyContacts />}
               {tab === "settings" && <Profile user={userData} />}
             </div>
           </div>

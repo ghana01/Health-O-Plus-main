@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { FaUser, FaHome } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
