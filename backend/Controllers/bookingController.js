@@ -14,10 +14,17 @@ export const createBooking = async (req, res) => {
     const doctor = await Doctor.findById(req.params.doctorId);
     const user = await User.findById(req.userId);
 
-    if (!doctor || !user) {
+    if (!doctor) {
       return res.status(404).json({
         success: false,
-        message: "Doctor or user not found"
+        message: "Doctor not found"
+      });
+    }
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found. Please login again."
       });
     }
 
@@ -29,7 +36,7 @@ export const createBooking = async (req, res) => {
     const booking = new Booking({
       doctor: doctor._id,
       user: user._id,
-      ticketPrice: doctor.ticketPrice,
+      ticketPrice: doctor.ticketPrice || "0", // Default to "0" if not set
       orderId: orderId,
       status: "approved", // Set status to approved directly - no admin approval needed
       videoCallRoomId: orderId,
