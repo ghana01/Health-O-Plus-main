@@ -31,8 +31,28 @@ const app = express();
 const port = process.env.PORT || 8000;
 
 // CORS configuration for production
+// Allows multiple Vercel preview URLs and production domain
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || true,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Allow all Vercel preview URLs for this project
+    const allowedPatterns = [
+      /\.vercel\.app$/,  // All Vercel domains
+      /localhost/,       // Local development
+      /127\.0\.0\.1/     // Local development
+    ];
+    
+    // Check if origin matches any allowed pattern
+    const isAllowed = allowedPatterns.some(pattern => pattern.test(origin));
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 };
 
